@@ -1,0 +1,237 @@
+:root {
+    --border-color: #000;
+    --bg-color: #f5f5f5;
+    --paper-color: #ffffff;
+    --hover-color: #f0f0f0;
+    --text-color: #000;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, "Microsoft JhengHei", sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    background-color: var(--bg-color);
+    user-select: none;
+}
+
+.container {
+    background-color: var(--paper-color);
+    width: 100%;
+    max-width: 1100px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+}
+
+/* --- Top Control Bar --- */
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eee;
+}
+
+.header-row h1 {
+    font-size: 32px;
+    margin: 0;
+    font-weight: bold;
+    text-align: center;
+    flex-grow: 1;
+}
+
+.btn-group { display: flex; gap: 10px; }
+
+button {
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 16px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+button:hover { background-color: #eee; }
+
+.print-btn {
+    background-color: #007bff; /* Professional blue */
+    color: white;
+    border-color: #007bff;
+}
+.print-btn:hover { background-color: #0056b3; }
+
+/* --- Calendar Grid --- */
+.calendar-wrapper {
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    border-right: none;
+}
+
+.calendar-header, .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.header-cell {
+    border-right: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px 5px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px;
+    background-color: #fff;
+}
+
+.day-cell {
+    border-right: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    height: 100px;
+    padding: 5px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: flex-start; /* Number aligned left */
+    align-items: flex-start;     /* Number aligned top */
+    font-size: 25px;
+    color: var(--text-color);
+    position: relative; /* For star positioning */
+    background-color: #fff;
+}
+
+.day-cell:hover { background-color: var(--hover-color); }
+
+/* --- ⭐ Star Style (For Screen Display) --- */
+.day-cell.today {
+    background-color: #fffde7; /* Very light yellow background for visibility */
+}
+
+/* Add star using pseudo-element without affecting HTML structure */
+.day-cell.today::after {
+    content: "⭐";
+    position: absolute;
+    bottom: 5px;  /* Star positioned at bottom right */
+    right: 5px;
+    font-size: 24px; /* Star size */
+    line-height: 1;
+}
+
+.day-cell.today:hover {
+    background-color: #fff9c4; /* Slightly darker yellow on hover */
+}
+
+/* --- 🔴 Sunday Style (Red Day) --- */
+.day-cell.sunday .day-number {
+    color: #d32f2f; /* Red */
+    font-weight: bold;
+}
+
+/* --- 🎉 Holiday Style --- */
+.day-cell.holiday .day-number {
+    color: #d32f2f; /* Red */
+    font-weight: bold;
+}
+
+.day-cell.holiday {
+    background-color: #ffebee; /* Light red background */
+}
+
+.day-cell.holiday:hover {
+    background-color: #ffcdd2;
+}
+
+.holiday-label {
+    position: absolute;
+    bottom: 3px;
+    left: 3px;
+    right: 3px;
+    font-size: 10px;
+    color: #c62828;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* --- 🖨️ Strict Print Mode --- */
+@media print {
+    @page {
+        size: landscape;
+        margin: 10mm;
+    }
+
+    * {
+        box-shadow: none !important;
+        text-shadow: none !important;
+        filter: none !important;
+        background-image: none !important;
+    }
+
+    body {
+        background: white;
+        padding: 0;
+        display: block;
+    }
+
+    .container {
+        box-shadow: none;
+        max-width: 100%;
+        width: 100%;
+        padding: 0;
+        border: none;
+    }
+
+    .no-print { display: none !important; }
+
+    .header-row {
+        border-bottom: none;
+        margin-bottom: 10px;
+    }
+
+    .calendar-wrapper {
+        border: 1px solid #000 !important;
+    }
+
+    .day-cell, .header-cell {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #000 !important;
+    }
+    
+    .day-cell.today::after {
+        display: none !important; 
+    }
+
+    /* Force English headers when printing */
+    .header-cell {
+        font-size: 0 !important; /* Hide original text */
+    }
+    .header-cell::after {
+        content: attr(data-print);
+        font-size: 20px;
+    }
+
+    /* Keep Sunday and holiday text red when printing */
+    .day-cell.sunday .day-number,
+    .day-cell.holiday .day-number {
+        color: #d32f2f !important;
+    }
+
+    /* Change holiday background to white when printing */
+    .day-cell.holiday {
+        background-color: white !important;
+    }
+
+    /* Show only Chinese for holiday labels when printing */
+    .holiday-label {
+        font-size: 0 !important;
+        color: #c62828 !important;
+    }
+    .holiday-label::after {
+        content: attr(data-print);
+        font-size: 9px;
+    }
+}
