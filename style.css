@@ -147,12 +147,14 @@ button:hover { background-color: #eee; }
     bottom: 3px;
     left: 3px;
     right: 3px;
-    font-size: 10px;
+    font-size: 11px;
     color: #c62828;
     line-height: 1.2;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
 }
 
 
