@@ -1,29 +1,31 @@
 /**
  * Hong Kong Public Holidays
  *
- * Uses Hong Kong Government 1823 API to fetch holiday data
+ * Data source: Hong Kong Government 1823 API
  * API: https://www.1823.gov.hk/common/ical/
  *
- * Note: When opening from local file://, holidays cannot be loaded due to CORS restrictions.
- * It will work properly after deploying to GitHub Pages or other HTTPS websites.
+ * Holiday data is cached locally and updated monthly by GitHub Actions.
  */
 
 // Parsed holidays map: { "YYYY-MM-DD": { zh: "中文名", en: "English Name" } }
 let holidaysMap = new Map();
 
-// API URLs
-const API_EN = 'https://www.1823.gov.hk/common/ical/en.json';
-const API_ZH = 'https://www.1823.gov.hk/common/ical/tc.json';
+// Local cached data (updated by GitHub Actions monthly)
+const LOCAL_EN = 'data/holidays-en.json';
+const LOCAL_ZH = 'data/holidays-zh.json';
 
 /**
- * Fetch holiday data from government API
+ * Fetch holiday data from local cache
  */
 async function fetchHolidays() {
   try {
-    const [enRes, zhRes] = await Promise.all([fetch(API_EN), fetch(API_ZH)]);
+    const [enRes, zhRes] = await Promise.all([
+      fetch(LOCAL_EN),
+      fetch(LOCAL_ZH),
+    ]);
 
     if (!enRes.ok || !zhRes.ok) {
-      throw new Error('API response not OK');
+      return;
     }
 
     const enData = await enRes.json();
@@ -31,7 +33,7 @@ async function fetchHolidays() {
 
     parseApiData(enData, zhData);
   } catch (error) {
-    // Silent handling on API failure, Sundays will still be marked
+    // Silent handling on failure, Sundays will still be marked
   }
 }
 

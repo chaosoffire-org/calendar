@@ -1,0 +1,43 @@
+name: Update Holidays Data
+
+on:
+  schedule:
+    # Run at 00:00 on December 15th every year (UTC)
+    - cron: '0 0 15 12 *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-holidays:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Fetch holiday data
+        run: |
+          mkdir -p data
+          curl -sL 'https://www.1823.gov.hk/common/ical/en.json' -o data/holidays-en.json
+          curl -sL 'https://www.1823.gov.hk/common/ical/tc.json' -o data/holidays-zh.json
+          echo "Fetched holiday data at $(date)"
+
+      - name: Create orphan branch and force push
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # Create orphan branch (no history)
+          git checkout --orphan output
+          
+          # Stage all files including the new holiday data
+          git add -A
+          
+          # Single commit
+          git commit -m "Deploy with holiday data [$(date +%Y-%m-%d)]"
+          
+          # Force push to output branch
+          git push origin output --force
